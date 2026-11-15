@@ -1,0 +1,18 @@
+schema: 1
+id: T-PONYTAIL-20261115-062443-2
+status: accepted
+category: alien_code
+title: "Removed the NewHarness/newHarnessAt split, whose only caller was shortHarnessRoot. NewHarness makes its own MkdirTemp root again and harness.go no longer differs from the base."
+created_at: 2026-11-15
+incident:
+  pattern: "Removed the NewHarness/newHarnessAt split, whose only caller was shortHarnessRoot. NewHarness makes its own MkdirTemp root again and harness.go no longer differs from the base."
+  what_went_wrong: "A coding agent wrote it and the ponytail pass cut it before delivery."
+  root_cause: "The coding agent wrote more than the issue needed."
+  rule_established: "Cut by the ponytail pass; it does not come back."
+  evidence:
+    - family: environment_layout_coupling
+      example: "Removed the NewHarness/newHarnessAt split, whose only caller was shortHarnessRoot. NewHarness makes its own MkdirTemp root again and harness.go no longer differs from the base."
+      artifact: "internal/e2e/harness.go"
+match:
+  family: environment_layout_coupling
+  artifact: "internal/e2e/harness.go"

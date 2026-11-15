@@ -13,7 +13,6 @@ func (m Model) View() string {
 		return ""
 	}
 
-	showSelectionActions, allowFix, selectedCount, totalCount := m.awaitingActionState()
 	hasCI := isCIActive(m.steps)
 	compact := m.height > 0 && m.height < 24
 	sectionGap := "\n\n"
@@ -42,20 +41,8 @@ func (m Model) View() string {
 	localBranch := renderLocalBranchStatus(m.branchSync, m.syncRefreshing, leftWidth)
 
 	// Action bar between pipeline box and findings/diff per DESIGN.md.
-	hasDiff := false
-	if step := awaitingStep(m.steps); step != nil {
-		raw, ok := m.stepDiffs[step.StepName]
-		hasDiff = ok && raw != ""
-	}
-	stepAwaiting := awaitingStep(m.steps)
-	approvalReady := m.approvalReady(stepAwaiting)
-	retryAvailable := m.reviewRetryAvailable()
-	actionBar := renderActionBar(m.steps, showSelectionActions, allowFix, m.showDiff, selectedCount, totalCount, m.confirmAbort, hasDiff, approvalReady, retryAvailable)
-	if stepAwaiting != nil && m.stepDiffTruncated[stepAwaiting.StepName] {
-		warning := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(ansiYellow)).
-			Render("⚠ Diff truncated at 512 KiB. Approval applies to the full diff.")
-		actionBar = warning + "\n" + actionBar
-	}
+	hasDiff := m.awaitingStepHasDiff()
+	actionBar := m.actionBarSection()
 
 	footer := renderFooter(m.done, m.showHelp, m.confirmAbort, m.yoloMode, m.run, m.latestVersion, m.width)
 	contentBudget := -1
@@ -284,6 +271,33 @@ func (m Model) View() string {
 	sections = append(sections, extraSections...)
 	sections = append(sections, footer)
 	return setTerminalTitle(m.terminalTitle()) + joinSections(sections, sectionGap)
+}
+
+// awaitingStepHasDiff reports whether the step parked at a gate has a fetched
+// diff to show.
+func (m Model) awaitingStepHasDiff() bool {
+	step := awaitingStep(m.steps)
+	if step == nil {
+		return false
+	}
+	raw, ok := m.stepDiffs[step.StepName]
+	return ok && raw != ""
+}
+
+// actionBarSection is the gate's action bar, under a truncated-diff warning
+// when the gate's diff was capped. Both screens draw it the same way.
+func (m Model) actionBarSection() string {
+	showSelectionActions, allowFix, selectedCount, totalCount := m.awaitingActionState()
+	stepAwaiting := awaitingStep(m.steps)
+	approvalReady := m.approvalReady(stepAwaiting)
+	retryAvailable := m.reviewRetryAvailable()
+	actionBar := renderActionBar(m.steps, showSelectionActions, allowFix, m.showDiff, selectedCount, totalCount, m.confirmAbort, m.awaitingStepHasDiff(), approvalReady, retryAvailable)
+	if stepAwaiting != nil && m.stepDiffTruncated[stepAwaiting.StepName] {
+		warning := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(ansiYellow)).
+			Render("⚠ Diff truncated at 512 KiB. Approval applies to the full diff.")
+		actionBar = warning + "\n" + actionBar
+	}
+	return actionBar
 }
 
 func renderFindingsBoxForHeight(raw string, width int, cursor int, selected map[string]bool, boxHeight int) string {
