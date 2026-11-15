@@ -5,3 +5,5 @@ internal/pipeline/steps/testdata/evidence_links/mr1016/* text eol=lf
 # objects, so a CRLF checkout would make `make winres-check` report drift.
 internal/winres/no-mistakes.exe.manifest text eol=lf
 cmd/no-mistakes/*.syso binary
+# TestRunscreenDemo_RecordedRunAtTheReviewGate compares this file's frames byte for byte.
+docs/runscreen-demo.md text eol=lf
