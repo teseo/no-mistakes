@@ -1,0 +1,11 @@
+# ATM's configuration for the runscreen demo branch of this fork.
+# Every key is required; an empty value is a deliberate "none".
+install: go mod download
+test: go test -count=1 ./internal/tui/...
+e2e: ''
+typecheck: go vet ./...
+lint: make lint
+test_file: go test -count=1 -run {tests} {dir}
+test_patterns: ["**/*_test.go", "**/testdata/**"]
+docs_patterns: ["**/*.md", "docs/**"]
+delivery: sh scripts/atm-deliver.sh
