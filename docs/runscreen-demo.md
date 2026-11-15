@@ -8,7 +8,7 @@ The pipeline is unchanged: nothing in `internal/pipeline`, `internal/daemon` or 
 The attach model in `internal/tui` still owns the subscription, the gate keys, the findings selection, yolo, rerun and branch sync.
 `internal/tui/runscreen.go` only draws what that model holds:
 
-- the pipeline box lists the run's own steps (intent, rebase, review, test, document, lint, push, pr, ci, plus any repository gates) with their state and time, and the branch and head as its title;
+- the pipeline box lists the run's own steps (intent, rebase, review, test, document, lint, push, pr, ci, plus any repository gates) with their state and time, and the branch as its title;
 - the Agent box shows the log of the step that runs, one event per line; it empties when another step starts;
 - a Findings box under it lists that step's findings, or the findings of the step parked at a gate, with the selection and the cursor the gate keys move;
 - the gate's action bar and the attach footer stay under runscreen's frame, so `a`, `f`, `s`, `x`, `y`, `r`, `o` and `q` work as before;
