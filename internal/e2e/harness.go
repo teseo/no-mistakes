@@ -85,16 +85,23 @@ const e2eDaemonStartTimeout = "45s"
 // to stop the daemon and remove temp state at test end.
 func NewHarness(t *testing.T, opts SetupOpts) *Harness {
 	t.Helper()
+	root, err := os.MkdirTemp("", "nm-e2e-*")
+	if err != nil {
+		t.Fatalf("mkdir e2e root: %v", err)
+	}
+	return newHarnessAt(t, opts, root)
+}
+
+// newHarnessAt is NewHarness in root, an empty directory the harness owns and
+// removes when the test ends.
+func newHarnessAt(t *testing.T, opts SetupOpts, root string) *Harness {
+	t.Helper()
 	if opts.Agent == "" {
 		opts.Agent = "claude"
 	}
 
 	nmBin, fakeBin := buildBinaries(t)
 
-	root, err := os.MkdirTemp("", "nm-e2e-*")
-	if err != nil {
-		t.Fatalf("mkdir e2e root: %v", err)
-	}
 	t.Cleanup(func() { _ = os.RemoveAll(root) })
 	h := &Harness{
 		t:                 t,

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/kunchenguid/no-mistakes/internal/branchsync"
 	"github.com/kunchenguid/no-mistakes/internal/cimonitor"
 	"github.com/kunchenguid/no-mistakes/internal/ipc"
@@ -504,8 +505,14 @@ func Run(socketPath string, client *ipc.Client, run *ipc.RunInfo, latestVersion 
 		model.syncRecover = func(keepLocal bool) branchsync.State { return service.Recover(context.Background(), keepLocal) }
 		model.refreshCachedSync()
 	}
-	p := tea.NewProgram(model, tea.WithAltScreen())
+	// runscreen draws the run; the attach Model still owns what it does. The
+	// mouse scrolls runscreen's boxes and folds their rows.
+	p := tea.NewProgram(newScreen(model), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	// As runscreen.Show does: a terminal can give a grapheme more columns than
+	// the renderer does, and its automatic wrap would then move later rows.
+	fmt.Print(ansi.ResetAutoWrapMode)
 	_, err := p.Run()
+	fmt.Print(ansi.SetAutoWrapMode)
 	return err
 }
 
