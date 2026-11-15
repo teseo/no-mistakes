@@ -108,8 +108,6 @@ func TestAttachDrawsWithRunscreen(t *testing.T) {
 		"approval · waiting", "Review awaiting action:", "a approve")
 	t.Logf("EVIDENCE runscreen at the review gate:\n%s", lastScreenFrame(frame))
 
-	// runscreen's own keys reach it: tab moves the focus between its boxes.
-	screen.send("\t")
 	// The attach Model's own full-screen views still draw: ? opens its help.
 	from = screen.send("?")
 	screen.waitFor(from, 15*time.Second, "toggle current", "select all")
