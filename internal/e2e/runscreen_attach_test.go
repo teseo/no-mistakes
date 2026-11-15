@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -82,7 +81,7 @@ func TestAttachDrawsWithRunscreen(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("the pty driver is script(1) from util-linux")
 	}
-	h := newHarnessAt(t, SetupOpts{Agent: "claude", Scenario: runscreenScenario(t)}, shortHarnessRoot(t))
+	h := NewHarness(t, SetupOpts{Agent: "claude", Scenario: runscreenScenario(t)})
 	h.CommitChange("init-runscreen", "seed.txt", "seed\n", "seed for the runscreen journey")
 	if out, err := h.RunInDir(h.AddWorktree("init-runscreen"), "init"); err != nil {
 		t.Fatalf("nm init: %v\n%s", err, out)
@@ -138,24 +137,6 @@ func TestAttachDrawsWithRunscreen(t *testing.T) {
 		t.Fatalf("review step = %+v, want completed after the TUI approved it", review)
 	}
 	recording.save(t, h)
-}
-
-// shortHarnessRoot is an empty harness root whose daemon socket fits the
-// kernel's limit even under a long TMPDIR, where a random temporary name does
-// not: a fixed short name under it, the first free one, which the e2e
-// daemon reaper takes for a temporary root by its nmh- prefix.
-func shortHarnessRoot(t *testing.T) string {
-	t.Helper()
-	for i := range 100 {
-		root := filepath.Join(os.TempDir(), "nmh-"+strconv.Itoa(i))
-		if err := os.Mkdir(root, 0o700); err == nil {
-			return root
-		} else if !os.IsExist(err) {
-			t.Fatalf("mkdir harness root: %v", err)
-		}
-	}
-	t.Fatal("no free short harness root")
-	return ""
 }
 
 // runRecording is a run as attach sees it: the snapshot it starts from and

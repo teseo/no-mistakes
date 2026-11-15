@@ -1,0 +1,18 @@
+schema: 1
+id: T-PONYTAIL-20261115-062443-1
+status: accepted
+category: alien_code
+title: "Deleted shortHarnessRoot, an 18-line loop that made fixed short nmh-N roots so the socket would fit under a long TMPDIR. The test now calls NewHarness like every other e2e test, and the strconv import is gone."
+created_at: 2026-11-15
+incident:
+  pattern: "Deleted shortHarnessRoot, an 18-line loop that made fixed short nmh-N roots so the socket would fit under a long TMPDIR. The test now calls NewHarness like every other e2e test, and the strconv import is gone."
+  what_went_wrong: "A coding agent wrote it and the ponytail pass cut it before delivery."
+  root_cause: "The coding agent wrote more than the issue needed."
+  rule_established: "Cut by the ponytail pass; it does not come back."
+  evidence:
+    - family: environment_layout_coupling
+      example: "Deleted shortHarnessRoot, an 18-line loop that made fixed short nmh-N roots so the socket would fit under a long TMPDIR. The test now calls NewHarness like every other e2e test, and the strconv import is gone."
+      artifact: "internal/e2e/runscreen_attach_test.go"
+match:
+  family: environment_layout_coupling
+  artifact: "internal/e2e/runscreen_attach_test.go"
