@@ -12,7 +12,7 @@ The attach model in `internal/tui` still owns the subscription, the gate keys, t
 - the Agent box shows the log of the step that runs, one event per line; it empties when another step starts;
 - a Findings box under it lists that step's findings, or the findings of the step parked at a gate, with the selection and the cursor the gate keys move;
 - the gate's action bar and the attach footer stay under runscreen's frame, so `a`, `f`, `s`, `x`, `y`, `r`, `o` and `q` work as before;
-- runscreen's own keys are the ones attach does not bind: `tab` moves between boxes, `pgup`/`pgdown` scroll the focused one, `t`, `h` and `i` fold or unfold, and the mouse wheel scrolls the box under it;
+- runscreen's own keys are the ones attach does not bind: `tab` moves between boxes, and `pgup`/`pgdown` scroll the focused one; the mouse is left to the terminal, so text on the screen can be selected and copied;
 - help (`?`), the diff (`d`), the finding editors and the branch-sync confirmations still draw the old full-screen views.
 
 ## The recorded run

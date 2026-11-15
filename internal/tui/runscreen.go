@@ -34,10 +34,10 @@ type screen struct {
 	partial string
 }
 
-// runscreenKeys are the keys the attach Model does not bind: runscreen's own,
-// which move the focus between its boxes, scroll the focused one, and fold or
-// unfold its tool calls, thinking and title.
-var runscreenKeys = map[string]bool{"tab": true, "pgup": true, "pgdown": true, "t": true, "h": true, "i": true}
+// runscreenKeys are the keys the attach Model does not bind that act on the
+// boxes this screen fills: runscreen's own, which move the focus between its
+// boxes and scroll the focused one.
+var runscreenKeys = map[string]bool{"tab": true, "pgup": true, "pgdown": true}
 
 func newScreen(m Model) *screen {
 	s := &screen{m: m}
@@ -57,8 +57,8 @@ func (s *screen) Init() tea.Cmd {
 	return tea.Batch(s.m.Init(), s.rs.Init())
 }
 
-// Update gives runscreen its own keys and the mouse while it draws, and the
-// attach Model everything else; runscreen also gets every message that is not
+// Update gives runscreen its own keys while it draws, and the attach Model
+// everything else; runscreen also gets every message that is not
 // a key, for its clock.
 func (s *screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -73,11 +73,6 @@ func (s *screen) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		s.m = next.(Model)
 		s.sync()
 		return s, cmd
-	case tea.MouseMsg:
-		if s.drawsRunscreen() {
-			s.rs.Update(msg)
-		}
-		return s, nil
 	case tea.WindowSizeMsg:
 		s.width, s.height = msg.Width, msg.Height
 	case eventMsg:

@@ -250,18 +250,20 @@ func TestScreen_RunscreensKeysStayOffTheAttachModel(t *testing.T) {
 	s := sizedScreen(coreRun())
 	sendEvent(s, logChunk("run-1", types.StepReview, "reviewing changes...\n"))
 	before := s.m
-	for _, k := range []string{"t", "h", "i", "tab"} {
-		if _, cmd := s.Update(key(k)); cmd != nil {
-			t.Errorf("runscreen's key %q returned a command", k)
-		}
+	if _, cmd := s.Update(key("tab")); cmd != nil {
+		t.Error("runscreen's key tab returned a command")
 	}
 	s.Update(tea.KeyMsg{Type: tea.KeyPgUp})
-	s.Update(tea.MouseMsg{X: 60, Y: 5, Button: tea.MouseButtonWheelUp, Action: tea.MouseActionPress})
+	s.Update(tea.KeyMsg{Type: tea.KeyPgDown})
 	if s.m.showHelp != before.showHelp || s.m.showDiff != before.showDiff || s.m.yoloMode != before.yoloMode {
 		t.Fatal("runscreen's keys changed the attach Model")
 	}
-	if !strings.Contains(screenFrame(s), "hide tool use") {
-		t.Fatalf("t did not reach runscreen:\n%s", screenFrame(s))
+	// The screen has no tool calls or thinking to fold, so t and h never
+	// reach runscreen.
+	s.Update(key("t"))
+	s.Update(key("h"))
+	if strings.Contains(screenFrame(s), "hide tool use") || strings.Contains(screenFrame(s), "hide thinking") {
+		t.Fatalf("a fold key reached runscreen:\n%s", screenFrame(s))
 	}
 }
 
@@ -271,10 +273,8 @@ func TestScreen_HelpAndOtherFullScreenViewsAreTheAttachModels(t *testing.T) {
 	if !s.m.showHelp || s.View() != s.m.View() {
 		t.Fatal("? should draw the attach Model's help")
 	}
-	// While the help shows, every key is the attach Model's, the mouse is
-	// ignored, and t closes the help, as any key does, instead of folding
-	// runscreen's tool calls.
-	s.Update(tea.MouseMsg{X: 60, Y: 5, Button: tea.MouseButtonWheelUp, Action: tea.MouseActionPress})
+	// While the help shows, every key is the attach Model's, and t closes the
+	// help, as any key does.
 	s.Update(key("t"))
 	if s.m.showHelp || strings.Contains(screenFrame(s), "hide tool use") {
 		t.Fatalf("t reached runscreen while the help showed:\n%s", screenFrame(s))
